@@ -4,6 +4,15 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 const bp = require("body-parser");
+const mongoose = require("mongoose");
+const Recipe = require("../models/recipes");
+
+const mongoDB = "mongodb://localhost:27017/testdb";
+mongoose.connect(mongoDB);
+mongoose.Promise = Promise;
+const db = mongoose.connection;
+
+db.on("error", console.error.bind(console, "MongoDB connection error"));
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -50,7 +59,21 @@ app.get("/dish", (req, res) => {
 })
 
 app.post("/recipe/", (req, res) => {
-    recipes.push(req.body);
+    Recipe.findOne({name: req.body.name}, (err, name) => {
+        if(err) return next(err);
+        if(!name) {
+            new Recipe({
+                name: req.body.name,
+                ingredients: req.body.ingredients,
+                instructions: req.body.instructions
+            }).save((err) => {
+                if(err) return next(err);
+                return res.send(req.body);
+            });
+        } else {
+            return res.status(403).send("Already has that recipe!")
+        }
+    //recipes.push(req.body);
     res.json(req.body);
 })
 
