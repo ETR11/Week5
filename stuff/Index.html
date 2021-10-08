@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week4</title>
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo">Recipes</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="col">
+            <h1 id="dish"></h1>
+            <ul id="ingredients"><h3>Ingredients</h3></ul>
+            <ul id="instructions"><h3>Instructions</h3></ul>
+        </div>
+        <div class="col">
+            <input type="text" id="name-text">
+            <h4>Ingredients</h4> 
+            <textarea id="ingredients-text"></textarea>
+            <button id="add-ingredient" type="button" class="btn">Add ingredient</button>
+            <h4>instructions</h4> 
+            <textarea id="instructions-text"></textarea>
+            <button id="add-instruction" type="button" class="btn">Add instruction</button>
+            <button id="submit" type="submit" class="btn">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        let ingText = [];
+        let insText = [];
+
+        let num = 1;
+
+        fetch("http://localhost:1234/recipe/:food")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("dish").innerHTML = data.name
+
+            data.ingredients.forEach(element => {
+                createListItem("ingredients", element)
+            });
+            num = 1;
+
+            data.instructions.forEach(element => {
+                createListItem("instructions", element)
+            });
+            num = 1;
+
+        });
+
+        function createListItem(id, element) {
+            let listItem = document.createElement("li")
+            let parent = document.getElementById(id)
+            listItem.innerHTML = num+". "+element
+            num++;
+            parent.appendChild(listItem)
+        }
+
+        document.getElementById("add-ingredient").addEventListener("click", function() {
+            let ing = document.getElementById("ingredients-text");
+            ingText.push('"'+ing.value+'"');
+        });
+
+        document.getElementById("add-instruction").addEventListener("click", function() {
+            let ins = document.getElementById("instructions-text");
+            insText.push('"'+ins.value+'"');
+        });
+
+        document.getElementById("submit").addEventListener("click", function() {
+            let name = document.getElementById("name-text");
+            fetch("http://localhost:1234/recipe/", {
+                method: "post",
+                headers: {
+                    "Content-type": "application/json"
+                }, body: '{"name": "'+name.value+'", "instructions": ['+insText+'], "ingredients": ['+ingText+']}'
+            }).then(response => response.json())
+              .then(data => {
+                  document.getElementById("dish").innerHTML = data.name
+
+                  data.ingredients.forEach(element => {
+                      createListItem("ingredients", element)
+                  });
+                  num = 1;
+
+                  data.instructions.forEach(element => {
+                      createListItem("instructions", element)
+                  });
+                  num = 1;
+
+              });
+    });
+    </script>
+</body>
+</html>
