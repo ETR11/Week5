@@ -73,8 +73,9 @@ app.post("/recipe/", (req, res, next) => {
         } else {
             return res.status(403).send("Already has that recipe!")
         }
+    });
     //recipes.push(req.body);
-    res.json(req.body);
+    //res.json(req.body);
 })
 
 module.exports = app;
