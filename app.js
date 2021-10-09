@@ -5,7 +5,16 @@ var logger = require('morgan');
 
 const bp = require("body-parser");
 const mongoose = require("mongoose");
-const Recipe = require("../models/recipes");
+
+const Schema = mongoose.Schema;
+
+let recipeSchema = new Schema ({
+    name: String,
+    ingredients: String,
+    instructions: String
+});
+
+const Recipe = mongoose.model("Recipe", recipeSchema);
 
 const mongoDB = "mongodb://localhost:27017/testdb";
 mongoose.connect(mongoDB);
