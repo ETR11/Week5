@@ -67,7 +67,7 @@ app.get("/dish", (req, res) => {
     }
 })
 
-app.post("/recipe/", (req, res, next) => {
+app.post("/recipe/", (req, res, next, err) => {
     Recipe.findOne({name: req.body.name}, (err, name) => {
         if(err) return next(err);
         if(!name) {
